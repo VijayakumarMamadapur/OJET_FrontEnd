@@ -20,7 +20,8 @@ define([
     self.quotesFunnelSeries = ko.observableArray([]); // single series with groups DRAFT, PRICED, CONFIRMED
     self.quotesFunnelGroups = ko.observableArray(['DRAFT','PRICED','CONFIRMED']);
 
-    self.claimsStatusSeries = ko.observableArray([]); // donut uses items
+    self.claimsStatusSeries = ko.observableArray([]); // pie (donut-style) uses one series with groups
+    self.claimsStatusGroups = ko.observableArray(['OPEN','APPROVED','REJECTED','CLOSED']);
 
     // Recent quotes
     self.recentQuotes = ko.observableArray([]);
@@ -55,13 +56,13 @@ define([
           api.claims.getAll(null, 'REJECTED'),
           api.claims.getAll(null, 'CLOSED')
         ]).then(function(res){
-          const items = [
-            { name: 'OPEN', items: [(res[0]||[]).length] },
-            { name: 'APPROVED', items: [(res[1]||[]).length] },
-            { name: 'REJECTED', items: [(res[2]||[]).length] },
-            { name: 'CLOSED', items: [(res[3]||[]).length] }
+          const counts = [
+            (res[0]||[]).length,
+            (res[1]||[]).length,
+            (res[2]||[]).length,
+            (res[3]||[]).length
           ];
-          self.claimsStatusSeries(items);
+          self.claimsStatusSeries([{ name: 'Claims', items: counts }]);
         })
       ]);
     }
@@ -93,4 +94,3 @@ define([
 
   return DashboardVM;
 });
-

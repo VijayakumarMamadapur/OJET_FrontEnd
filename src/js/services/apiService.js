@@ -106,8 +106,16 @@ define(['./http', './config'], function(http, config) {
     async confirm(id) {
       const resp = await http.request(base + '/quotes/' + encodeURIComponent(id) + '/confirm', { method: 'POST' });
       return getJson(resp);
+    },
+    async ackPayment(id) {
+      const resp = await http.request(base + '/quotes/' + encodeURIComponent(id) + '/ack-payment', { method: 'POST' });
+      return getJson(resp);
+    },
+    async remove(id) {
+      const resp = await http.request(base + '/quotes/' + encodeURIComponent(id), { method: 'DELETE' });
+      if (!resp.ok) throw new Error('Delete failed ' + resp.status);
+      return true;
     }
-    // Note: no delete endpoint in backend; omit remove()
   };
 
   const policies = {

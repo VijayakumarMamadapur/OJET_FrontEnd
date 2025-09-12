@@ -74,6 +74,7 @@ define([
     };
 
     self.fileClaim = async function () {
+      if (self.isAdmin()) return; // only users can file
       try {
         var c = await api.claims.create({
           policyId: self.newClaim.policyId(),
@@ -89,6 +90,7 @@ define([
     };
 
     self.updateClaim = async function () {
+      if (self.isAdmin()) return; // only users can update their claim
       try {
         await api.claims.update(self.selectedClaim.id(), {
           description: self.selectedClaim.description(),
@@ -102,6 +104,7 @@ define([
     };
 
     self.assessClaim = async function () {
+      if (!self.isAdmin()) return; // only admin can assess
       try {
         await api.claims.assess(self.assessData.id(), {
           decision: self.assessData.decision(),
@@ -116,6 +119,7 @@ define([
     };
 
     self.closeClaim = async function (row) {
+      if (!self.isAdmin()) return; // only admin can close
       try {
         await api.claims.close(row.id);
         self.loadClaims();
@@ -124,10 +128,11 @@ define([
       }
     };
 
-    self.openNewClaimDialog = function(){ document.getElementById('newClaimDialog').open(); };
+    self.openNewClaimDialog = function(){ if (self.isAdmin()) return; document.getElementById('newClaimDialog').open(); };
     self.closeNewClaimDialog = function(){ document.getElementById('newClaimDialog').close(); };
 
     self.openUpdateDialog = function(row){
+      if (self.isAdmin()) return; // only users edit
       self.selectedClaim.id(row.id);
       self.selectedClaim.description(row.description);
       self.selectedClaim.lossDate(row.lossDate);

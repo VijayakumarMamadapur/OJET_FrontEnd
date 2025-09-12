@@ -49,7 +49,7 @@
     <!-- Template for rendering navigation items shared between nav bar and nav list -->
     <script type="text/html" id="navTemplate">
       <li><a href="#">
-        <span :class="[[$data.detail.iconClass]]"></span>
+        <span :class="[['oj-ux-icon', $data.detail.iconClass]]"></span>
         <oj-bind-text value="[[$data.detail.label]]"></oj-bind-text>
       </a></li>
     </script>

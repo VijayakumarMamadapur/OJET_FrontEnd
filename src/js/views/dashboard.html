@@ -32,7 +32,7 @@
       </div>
       <div class="chart-card">
         <h3>Claims by Status</h3>
-        <oj-chart type="donut" series="[[claimsStatusSeries]]">
+        <oj-chart type="pie" inner-radius="0.6" series="[[claimsStatusSeries]]" groups="[[claimsStatusGroups]]">
         </oj-chart>
       </div>
     </div>
@@ -52,4 +52,3 @@
     </div>
   </div>
 </oj-bind-if>
-

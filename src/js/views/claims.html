@@ -3,7 +3,9 @@
 <div class="claims-page oj-flex oj-sm-flex-direction-column">
   <div class="claims-header oj-flex oj-sm-flex-items-pad oj-sm-align-items-center">
     <h2 class="page-title">Claims</h2>
-    <oj-button on-oj-action="[[openNewClaimDialog]]">File Claim</oj-button>
+    <oj-bind-if test="[[!isAdmin()]]">
+      <oj-button on-oj-action="[[openNewClaimDialog]]">File Claim</oj-button>
+    </oj-bind-if>
   </div>
 
   <oj-messages messages="[[messages]]"></oj-messages>
@@ -28,7 +30,9 @@
               {"headerText":"Actions","template":"actionTemplate"}
             ]'>
     <template slot="actionTemplate" data-oj-as="row">
-      <oj-button chroming="outlined" size="sm" on-oj-action="[[function(){ $parent.openUpdateDialog(row.data); }]]">Update</oj-button>
+      <oj-bind-if test="[[!$parent.isAdmin()]]">
+        <oj-button chroming="outlined" size="sm" on-oj-action="[[function(){ $parent.openUpdateDialog(row.data); }]]">Update</oj-button>
+      </oj-bind-if>
       <oj-bind-if test="[[$parent.isAdmin()]]">
         <oj-button chroming="outlined" size="sm" on-oj-action="[[function(){ $parent.openAssessDialog(row.data); }]]">Assess</oj-button>
         <oj-button chroming="outlined" size="sm" on-oj-action="[[function(){ $parent.closeClaim(row.data); }]]">Close</oj-button>
