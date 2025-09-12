@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="../css/products.css" />
+
+<div class="products-page oj-flex oj-sm-flex-direction-column">
+  <div class="products-header oj-flex oj-sm-flex-items-pad oj-sm-align-items-center">
+    <div class="header-left">
+      <h2 class="page-title">Products</h2>
+      <div class="page-subtitle">Manage insurance products</div>
+    </div>
+    <div class="header-actions oj-flex-item">
+      <div class="oj-flex oj-sm-margin-2x-bottom">
+        <label for="activeSwitch" class="oj-sm-margin-2x-end">Show Active Only</label>
+        <oj-switch id="activeSwitch" value="{{showActiveOnly}}"></oj-switch>
+      </div>
+      <oj-input-search id="productSearchBox" placeholder="Search by name or code" value="{{searchQuery}}" class="search-input" show-clear-icon="true" on-oj-value-action="[[applySearch]]"></oj-input-search>
+      <div class="action-buttons">
+        <oj-button id="refreshBtn" on-oj-action="[[loadProducts]]" chroming="borderless" title="Reload">Refresh
+          <span class="oj-ux-icon oj-ux-icon-refresh"></span>
+        </oj-button>
+        <oj-button id="exportBtn" on-oj-action="[[exportCSV]]" chroming="borderless" title="Export CSV">Export CSV
+          <span class="oj-ux-icon oj-ux-icon-download"></span>
+        </oj-button>
+        <oj-bind-if test="[[isAdmin]]">
+          <oj-button id="addBtn" on-oj-action="[[addProduct]]" chroming="callToAction">
+            <span class="oj-ux-icon oj-ux-icon-plus"></span>&nbsp;Add Product
+          </oj-button>
+        </oj-bind-if>
+      </div>
+    </div>
+  </div>
+
+  <div class="products-card">
+    <oj-table id="productsTable" data="[[productDataProvider]]" aria-label="Products table" class="products-table" selection-mode='{"row": "single"}' current-row="{{selectedProduct}}" scroll-policy="loadMoreOnScroll" display="grid" columns-default='{"sortable": "enabled"}' columns='[
+        {"headerText": "ID", "field": "id"},
+        {"headerText": "Name", "field": "name"},
+        {"headerText": "Code", "field": "code"},
+        {"headerText": "Description", "field": "description"},
+        {"headerText": "Base Rate", "field": "baseRatePer1000"},
+        {"headerText": "Min Assured", "field": "minSumAssured"},
+        {"headerText": "Max Assured", "field": "maxSumAssured"},
+        {"headerText": "Min Term", "field": "minTermMonths"},
+        {"headerText": "Max Term", "field": "maxTermMonths"},
+        {"headerText": "Active", "field": "active", "template": "activeTemplate"}
+      ]'>
+      <template slot="activeTemplate" data-oj-as="cell">
+        <span data-bind="text: cell.item.data.active ? 'Yes' : 'No'"></span>
+      </template>
+    </oj-table>
+    <oj-paging-control data="[[productDataProvider]]" page-size="10" class="products-paging"></oj-paging-control>
+  </div>
+</div>
+
+<oj-dialog id="productDialog" dialog-title="Product" modality="modal" class="product-dialog" style="width: 600px; max-width: 90%; height: auto;">
+  <div slot="body">
+    <oj-form-layout label-edge="inside">
+      <oj-input-text value="{{dialogProduct().name}}" label-hint="Name" required disabled="[[!isAdmin()]]"></oj-input-text>
+      <oj-input-text value="{{dialogProduct().code}}" label-hint="Code" required disabled="[[!isAdmin()]]"></oj-input-text>
+      <oj-input-text value="{{dialogProduct().description}}" label-hint="Description" disabled="[[!isAdmin()]]"></oj-input-text>
+      <oj-input-number value="{{dialogProduct().baseRatePer1000}}" label-hint="Base Rate/1000" disabled="[[!isAdmin()]]"></oj-input-number>
+      <oj-input-number value="{{dialogProduct().minSumAssured}}" label-hint="Min Sum Assured" disabled="[[!isAdmin()]]"></oj-input-number>
+      <oj-input-number value="{{dialogProduct().maxSumAssured}}" label-hint="Max Sum Assured" disabled="[[!isAdmin()]]"></oj-input-number>
+      <oj-input-number value="{{dialogProduct().minTermMonths}}" label-hint="Min Term (Months)" disabled="[[!isAdmin()]]"></oj-input-number>
+      <oj-input-number value="{{dialogProduct().maxTermMonths}}" label-hint="Max Term (Months)" disabled="[[!isAdmin()]]"></oj-input-number>
+      <oj-switch value="{{dialogProduct().active}}" label-hint="Active" disabled="[[!isAdmin()]]"></oj-switch>
+    </oj-form-layout>
+  </div>
+  <div slot="footer" class="dialog-actions">
+    <oj-bind-if test="[[isAddMode]]">
+      <oj-button on-oj-action="[[saveProduct]]" chroming="callToAction">Save</oj-button>
+      <oj-button on-oj-action="[[closeDialog]]" chroming="borderless">Cancel</oj-button>
+    </oj-bind-if>
+    <oj-bind-if test="[[isEditMode]]">
+      <oj-bind-if test="[[isAdmin]]">
+        <oj-button on-oj-action="[[saveProduct]]" chroming="callToAction">Update</oj-button>
+      </oj-bind-if>
+      <oj-bind-if test="[[isAdmin]]">
+        <oj-button on-oj-action="[[deleteProduct]]" chroming="danger">Delete</oj-button>
+      </oj-bind-if>
+      <oj-button on-oj-action="[[closeDialog]]" chroming="borderless">Cancel</oj-button>
+    </oj-bind-if>
+  </div>
+</oj-dialog>

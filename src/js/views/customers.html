@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="../css/customers.css" />
+<div class="customers-page oj-flex oj-sm-flex-direction-column">
+  <div class="customers-header oj-flex oj-sm-flex-items-pad oj-sm-align-items-center">
+    <div class="header-left">
+      <h2 class="page-title">Customers</h2>
+      <div class="page-subtitle">Manage customers</div>
+    </div>
+    <div class="header-actions oj-flex-item">
+      <oj-input-search id="searchBox" placeholder="Search by name or email" value="{{searchQuery}}" class="search-input" show-clear-icon="true" on-oj-value-action="[[applySearch]]"></oj-input-search>
+      <div class="action-buttons">
+        <oj-button id="refreshBtn" on-oj-action="[[loadCustomers]]" chroming="borderless" title="Reload">Refresh
+          <span class="oj-ux-icon oj-ux-icon-refresh"></span>
+        </oj-button>
+        <oj-bind-if test="[[isAdmin]]">
+          <oj-button id="exportBtn" on-oj-action="[[exportCSV]]" chroming="borderless" title="Export CSV">Export CSV
+            <span class="oj-ux-icon oj-ux-icon-download"></span>
+          </oj-button>
+        </oj-bind-if>
+        <oj-bind-if test="[[isAdmin]]">
+          <oj-button id="addBtn" on-oj-action="[[addCustomer]]" chroming="callToAction">
+            <span class="oj-ux-icon oj-ux-icon-plus"></span>&nbsp;Add Customer
+          </oj-button>
+        </oj-bind-if>
+      </div>
+    </div>
+  </div>
+
+  <div class="customers-card">
+    <oj-table id="customersTable" data="[[customerDataProvider]]" aria-label="Customers table" class="customers-table" selection-mode='{"row": "single"}' current-row="{{selectedCustomer}}" scroll-policy="loadMoreOnScroll" display="grid" columns-default='{"sortable": "enabled"}' columns='[
+        {"headerText": "ID", "field": "id"},
+        {"headerText": "First Name", "field": "firstName"},
+        {"headerText": "Last Name", "field": "lastName"},
+        {"headerText": "Email", "field": "email"},
+        {"headerText": "Phone", "field": "phone"},
+        {"headerText": "DOB", "field": "dob"}
+      ]'>
+    </oj-table>
+    <oj-paging-control data="[[customerDataProvider]]" page-size="10" class="customers-paging"></oj-paging-control>
+  </div>
+</div>
+
+<oj-dialog id="customerDialog" dialog-title="Customer" modality="modal" class="customer-dialog">
+  <div slot="body">
+    <oj-form-layout label-edge="inside">
+      <oj-input-text value="{{dialogCustomer().firstName}}" label-hint="First Name" required></oj-input-text>
+      <oj-input-text value="{{dialogCustomer().lastName}}" label-hint="Last Name"></oj-input-text>
+      <oj-input-text value="{{dialogCustomer().email}}" label-hint="Email" required></oj-input-text>
+      <oj-input-text value="{{dialogCustomer().phone}}" label-hint="Phone"></oj-input-text>
+      <oj-input-date value="{{dialogCustomer().dob}}" label-hint="Date of Birth"></oj-input-date>
+    </oj-form-layout>
+  </div>
+  <div slot="footer" class="dialog-actions">
+    <oj-bind-if test="[[isAddMode]]">
+      <oj-button on-oj-action="[[saveCustomer]]" chroming="callToAction">Save</oj-button>
+      <oj-button on-oj-action="[[closeDialog]]" chroming="borderless">Cancel</oj-button>
+    </oj-bind-if>
+    <oj-bind-if test="[[isEditMode]]">
+      <oj-button on-oj-action="[[saveCustomer]]" chroming="callToAction">Update</oj-button>
+      <oj-bind-if test="[[isAdmin]]">
+        <oj-button on-oj-action="[[deleteCustomer]]" chroming="danger">Delete</oj-button>
+      </oj-bind-if>
+      <oj-button on-oj-action="[[closeDialog]]" chroming="borderless">Cancel</oj-button>
+    </oj-bind-if>
+  </div>
+</oj-dialog>

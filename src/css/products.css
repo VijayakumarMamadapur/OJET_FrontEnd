@@ -1,0 +1,8 @@
+/* Products page styles */
+.products-page { padding: 16px; }
+.products-header { justify-content: space-between; margin-bottom: 12px; }
+.products-card { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.products-table { width: 100%; }
+.products-paging { margin-top: 8px; }
+.action-buttons oj-button { margin-left: 4px; }
+

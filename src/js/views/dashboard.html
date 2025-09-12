@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="../css/dashboard.css" />
+
+<oj-bind-if test="[[true]]">
+  <div class="dashboard" data-bind="if: isAdmin()">
+    <!-- KPI Tiles -->
+    <div class="kpi-grid">
+      <div class="kpi-tile">
+        <div class="kpi-label">Active Policies</div>
+        <div class="kpi-value" data-bind="text: kpiActivePolicies"></div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-label">Open Claims</div>
+        <div class="kpi-value" data-bind="text: kpiOpenClaims"></div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-label">Pending Quotes</div>
+        <div class="kpi-value" data-bind="text: kpiPendingQuotes"></div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-label">Active Products</div>
+        <div class="kpi-value" data-bind="text: kpiActiveProducts"></div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Quotes Funnel</h3>
+        <oj-chart type="bar" orientation="vertical" stack="off"
+                  series="[[quotesFunnelSeries]]" groups="[[quotesFunnelGroups]]">
+        </oj-chart>
+      </div>
+      <div class="chart-card">
+        <h3>Claims by Status</h3>
+        <oj-chart type="donut" series="[[claimsStatusSeries]]">
+        </oj-chart>
+      </div>
+    </div>
+
+    <!-- Recent Quotes Table -->
+    <div class="table-card">
+      <h3>Recent Quotes</h3>
+      <oj-table data="[[new oj.ArrayDataProvider(recentQuotes, {keyAttributes:'id'})]]" columns='[
+          {"headerText":"ID","field":"id"},
+          {"headerText":"Customer","field":"customerName"},
+          {"headerText":"Product","field":"productName"},
+          {"headerText":"Status","field":"status"},
+          {"headerText":"Premium","field":"premium"},
+          {"headerText":"Created","field":"createdAt"}
+        ]'>
+      </oj-table>
+    </div>
+  </div>
+</oj-bind-if>
+

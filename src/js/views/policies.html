@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="../css/policies.css" />
+
+<div class="oj-flex oj-sm-flex-direction-column oj-sm-align-items-start">
+  <h2>Policies</h2>
+
+  <oj-messages messages="[[messages]]"></oj-messages>
+
+  <oj-bind-if test="[[isAdmin]]">
+    <oj-form-layout>
+      <oj-select-single label-hint="Filter by Customer" data="[[customersDP]]" item-text="fullName" value="{{filterCustomerId}}"></oj-select-single>
+      <oj-button on-oj-action="[[loadPolicies]]">Apply Filter</oj-button>
+    </oj-form-layout>
+  </oj-bind-if>
+
+  <oj-table id="policiesTable" aria-label="Policies" data="[[policiesDP]]" selection-mode='{"row": "single"}'
+            current-row="{{selectedRow}}" on-current-row-changed="[[handleRowChanged]]" scroll-policy="loadMoreOnScroll" display="grid"
+            columns-default='{"sortable": "enabled"}' columns='[
+              {"headerText": "Policy No", "field": "policyNumber"},
+              {"headerText": "Customer", "field": "customer.fullName"},
+              {"headerText": "Product", "field": "product.name"},
+              {"headerText": "Sum Assured", "field": "sumAssured"},
+              {"headerText": "Term (Months)", "field": "termMonths"},
+              {"headerText": "Premium", "field": "premium"},
+              {"headerText": "Status", "field": "status"},
+              {"headerText": "Start Date", "field": "startDate"},
+              {"headerText": "End Date", "field": "endDate"}
+            ]'>
+  </oj-table>
+
+  <oj-dialog id="viewPolicyDialog" dialog-title="Policy Details">
+    <div slot="body" data-bind="if: selectedPolicy">
+      <oj-form-layout>
+        <oj-input-text label-hint="Policy Number" value="{{selectedPolicy().policyNumber}}" readonly></oj-input-text>
+        <oj-input-text label-hint="Customer" value="{{selectedPolicy().customer.fullName}}" readonly></oj-input-text>
+        <oj-input-text label-hint="Product" value="{{selectedPolicy().product.name}}" readonly></oj-input-text>
+        <oj-input-text label-hint="Sum Assured" value="{{selectedPolicy().sumAssured}}" readonly></oj-input-text>
+        <oj-input-text label-hint="Term Months" value="{{selectedPolicy().termMonths}}" readonly></oj-input-text>
+        <oj-input-text label-hint="Premium" value="{{selectedPolicy().premium}}" readonly></oj-input-text>
+        <oj-input-text label-hint="Status" value="{{selectedPolicy().status}}" readonly></oj-input-text>
+        <oj-input-text label-hint="Start Date" value="{{selectedPolicy().startDate}}" readonly></oj-input-text>
+        <oj-input-text label-hint="End Date" value="{{selectedPolicy().endDate}}" readonly></oj-input-text>
+      </oj-form-layout>
+    </div>
+    <div slot="footer">
+      <oj-button on-oj-action="[[closeDialog]]">Close</oj-button>
+    </div>
+  </oj-dialog>
+</div>

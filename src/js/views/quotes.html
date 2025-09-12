@@ -1,0 +1,76 @@
+<div class="oj-flex oj-sm-flex-direction-column oj-sm-align-items-start">
+  <h2>Quotes</h2>
+
+  <oj-messages messages="[[messages]]"></oj-messages>
+
+  <oj-bind-if test="[[isAdmin]]">
+    <oj-form-layout>
+      <oj-select-single label-hint="Filter by Customer" data="[[customersDP]]" item-text="fullName" value="{{filterCustomerId}}"></oj-select-single>
+      <oj-select-single label-hint="Filter by Status" data="[[statusDP]]" value="{{filterStatus}}"></oj-select-single>
+      <oj-button on-oj-action="[[applyFilter]]">Apply Filter</oj-button>
+    </oj-form-layout>
+  </oj-bind-if>
+
+  <oj-button on-oj-action="[[function(){ document.getElementById('createQuoteDialog').open(); }]]">Create Quote</oj-button>
+
+  <div style="margin-top:12px; margin-bottom:8px;" data-bind="visible: isAdmin()">
+    <oj-button on-oj-action="[[priceCheckedRows]]">Price Selected</oj-button>
+    <oj-button on-oj-action="[[confirmCheckedRows]]">Confirm Selected</oj-button>
+    <oj-button on-oj-action="[[deleteSelected]]">Delete Selected</oj-button>
+  </div>
+
+  <oj-table aria-label="Quotes" data="[[quotesDP]]" selection-mode.row="single" current-row="{{selectedRow}}"
+            columns='[[[
+              { headerText: "Select", field: "selected" },
+              { headerText: "ID", field: "id" },
+              { headerText: "Customer", field: "customer.fullName" },
+              { headerText: "Product", field: "product.name" },
+              { headerText: "Sum Assured", field: "sumAssured" },
+              { headerText: "Term (Months)", field: "termMonths" },
+              { headerText: "Premium", field: "premiumCached" },
+              { headerText: "Status", field: "status" }
+            ]]]'>
+    <template slot="rowTemplate" data-oj-as="row">
+      <tr>
+        <td><input type="checkbox" data-bind="checked: row.data.selected" onclick="event.stopPropagation();" /></td>
+        <td data-bind="text: row.data.id"></td>
+        <td data-bind="text: row.data.customer ? row.data.customer.fullName : ''"></td>
+        <td data-bind="text: row.data.product ? row.data.product.name : ''"></td>
+        <td data-bind="text: row.data.sumAssured"></td>
+        <td data-bind="text: row.data.termMonths"></td>
+        <td data-bind="text: row.data.premiumCached"></td>
+        <td data-bind="text: row.data.status"></td>
+      </tr>
+    </template>
+  </oj-table>
+
+  <oj-dialog id="createQuoteDialog" dialog-title="Create Quote" chromeless="true">
+    <div slot="body">
+      <oj-form-layout>
+        <oj-bind-if test="[[isAdmin]]">
+          <oj-select-single label-hint="Customer" data="[[customersDP]]" item-text="fullName" value="{{newQuote.customerId}}"></oj-select-single>
+        </oj-bind-if>
+        <oj-select-single label-hint="Product" data="[[productsDP]]" item-text="name" value="{{newQuote.productId}}"></oj-select-single>
+        <oj-input-text label-hint="Sum Assured" value="{{newQuote.sumAssured}}"></oj-input-text>
+        <oj-input-text label-hint="Term Months" value="{{newQuote.termMonths}}"></oj-input-text>
+      </oj-form-layout>
+    </div>
+    <div slot="footer">
+      <oj-button on-oj-action="[[createQuote]]">Save</oj-button>
+      <oj-button on-oj-action="[[function(){ document.getElementById('createQuoteDialog').close(); }]]">Cancel</oj-button>
+    </div>
+  </oj-dialog>
+
+  <oj-dialog id="updateQuoteDialog" dialog-title="Update Quote" chromeless="true">
+    <div slot="body">
+      <oj-form-layout>
+        <oj-input-text label-hint="Sum Assured" value="{{editQuote().sumAssured}}"></oj-input-text>
+        <oj-input-text label-hint="Term Months" value="{{editQuote().termMonths}}"></oj-input-text>
+      </oj-form-layout>
+    </div>
+    <div slot="footer">
+      <oj-button on-oj-action="[[function(){ /* save path handled via admin-only update in VM if added */ document.getElementById('updateQuoteDialog').close(); }]]">Close</oj-button>
+    </div>
+  </oj-dialog>
+</div>
+

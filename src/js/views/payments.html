@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="../css/payments.css" />
+
+<div class="payments-page oj-flex oj-sm-flex-direction-column">
+  <h2>Payments</h2>
+
+  <oj-messages messages="[[messages]]"></oj-messages>
+
+  <oj-bind-if test="[[isAdmin()]]">
+    <oj-form-layout>
+      <oj-select-single label-hint="Target Type" data='[[new oj.ArrayDataProvider(targetTypes, {keyAttributes:"value"})]]' value='{{targetType}}' item-text='label'></oj-select-single>
+      <oj-input-text label-hint="Target ID" value='{{targetId}}'></oj-input-text>
+      <oj-button on-oj-action='[[applyFilter]]'>Load</oj-button>
+    </oj-form-layout>
+  </oj-bind-if>
+
+  <oj-bind-if test="[[!isAdmin()]]">
+    <oj-form-layout>
+      <oj-select-single label-hint="Policy" data='[[userPoliciesDP]]' item-text='policyNumber' value='{{selectedPolicyId}}'></oj-select-single>
+      <oj-button on-oj-action='[[changePolicy]]'>Load</oj-button>
+    </oj-form-layout>
+  </oj-bind-if>
+
+  <div class="actions">
+    <oj-button on-oj-action='[[showDialog]]'>New Payment</oj-button>
+  </div>
+
+  <oj-table data='[[dataProvider]]' columns='[
+      {"headerText":"ID","field":"id"},
+      {"headerText":"Target Type","field":"targetType"},
+      {"headerText":"Target ID","field":"targetId"},
+      {"headerText":"Amount","field":"amount"},
+      {"headerText":"Method","field":"method"},
+      {"headerText":"Status","field":"status"},
+      {"headerText":"Gateway Ref","field":"gatewayRef"},
+      {"headerText":"Created","field":"createdAt"}
+    ]'>
+  </oj-table>
+
+  <oj-dialog id='paymentDialog' dialog-title='Record Payment' cancel-behavior='icon'>
+    <div slot='body'>
+      <oj-form-layout>
+        <oj-bind-if test='[[isAdmin()]]'>
+          <oj-select-single label-hint='Target Type' data='[[new oj.ArrayDataProvider(targetTypes, {keyAttributes:"value"})]]' value='{{targetType}}' item-text='label'></oj-select-single>
+          <oj-input-text label-hint='Target ID' value='{{targetId}}'></oj-input-text>
+        </oj-bind-if>
+        <oj-bind-if test='[[!isAdmin()]]'>
+          <oj-select-single label-hint='Policy' data='[[userPoliciesDP]]' item-text='policyNumber' value='{{selectedPolicyId}}'></oj-select-single>
+        </oj-bind-if>
+        <oj-input-number label-hint='Amount' value='{{payAmount}}'></oj-input-number>
+        <oj-input-text label-hint='Method' value='{{payMethod}}'></oj-input-text>
+      </oj-form-layout>
+    </div>
+    <div slot='footer'>
+      <oj-button on-oj-action='[[createPayment]]'>Save</oj-button>
+      <oj-button on-oj-action='[[closeDialog]]'>Cancel</oj-button>
+    </div>
+  </oj-dialog>
+</div>
+

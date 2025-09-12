@@ -1,0 +1,19 @@
+<div class="profile-page">
+  <div class="profile-card oj-typography-body-md">
+    <h2 class="page-title">My Profile</h2>
+    <div class="page-subtitle">View and edit your details</div>
+    <oj-form-layout max-columns="2">
+      <oj-input-text value="{{firstName}}" label-hint="First Name"></oj-input-text>
+      <oj-input-text value="{{lastName}}" label-hint="Last Name"></oj-input-text>
+      <oj-input-text value="{{email}}" label-hint="Email"></oj-input-text>
+      <oj-input-text value="{{phone}}" label-hint="Phone"></oj-input-text>
+      <oj-input-text value="{{dob}}" label-hint="Date of Birth (YYYY-MM-DD)"></oj-input-text>
+      <div class="form-actions" style="grid-column: 1 / -1; margin-top: 8px;">
+        <oj-button on-oj-action="[[save]]" chroming="callToAction">Save</oj-button>
+      </div>
+    </oj-form-layout>
+    <div role="status" class="msg ok" data-bind="text: success"></div>
+    <div role="alert" class="msg err" data-bind="text: error"></div>
+  </div>
+</div>
+

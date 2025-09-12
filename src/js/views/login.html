@@ -1,0 +1,15 @@
+<div class="login-wrapper">
+  <div class="login-card oj-typography-body-md">
+    <div class="login-header">
+      <div class="login-title">Welcome</div>
+      <div class="login-subtitle">Sign in to continue</div>
+    </div>
+    <oj-form-layout max-columns="1">
+      <oj-input-text value="{{username}}" label-hint="Username"></oj-input-text>
+      <label class="oj-label">Password</label>
+      <input type="password" data-bind="value: password" class="oj-form-control oj-inputtext-input" />
+      <oj-button class="login-button" on-oj-action="[[signIn]]" chroming="callToAction">Sign In</oj-button>
+      <div role="alert" aria-live="polite" data-bind="text: error" class="login-error"></div>
+    </oj-form-layout>
+  </div>
+</div>

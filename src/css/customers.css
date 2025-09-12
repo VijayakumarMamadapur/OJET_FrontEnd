@@ -1,0 +1,12 @@
+/* Customers page styles */
+.customers-page { padding: 16px; }
+.customers-header { justify-content: space-between; margin-bottom: 12px; }
+.header-left .page-title { margin: 0; }
+.page-subtitle { color: #6b7280; font-size: 12px; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.action-buttons oj-button { margin-left: 4px; }
+.customers-card { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.customers-table { width: 100%; }
+.customers-paging { margin-top: 8px; }
+.customer-dialog { max-width: 520px; }
+
