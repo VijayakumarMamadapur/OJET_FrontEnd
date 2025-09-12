@@ -19,6 +19,7 @@
 
   <!-- Admin Actions -->
   <div style="margin-top:12px; margin-bottom:8px;" data-bind="visible: isAdmin()">
+    <oj-button on-oj-action="[[editSelectedQuote]]">Edit Selected</oj-button>
     <oj-button on-oj-action="[[priceCheckedRows]]">Price Selected</oj-button>
     <oj-button on-oj-action="[[confirmCheckedRows]]">Confirm Selected</oj-button>
     <oj-button on-oj-action="[[deleteSelected]]">Delete Selected</oj-button>

@@ -80,24 +80,9 @@ define([
       return self.quotes().find(function(q){ return q.id === row.rowKey; }) || null;
     });
 
-    self.selectedRow.subscribe(function(row){
-      if (!self.isAdmin()) return; // admin-only edit
-      if (row && row.rowKey) {
-        const quote = self.quotes().find(function(q){ return q.id === row.rowKey; });
-        if (quote) {
-          self.editQuote({
-            id: quote.id,
-            customerId: quote.customer && quote.customer.id,
-            productId: quote.product && quote.product.id,
-            sumAssured: quote.sumAssured,
-            termMonths: quote.termMonths,
-            status: quote.status
-          });
-          const dlg = document.getElementById('updateQuoteDialog');
-          if (dlg) dlg.open();
-        }
-      }
-    });
+    // Do not auto-open edit dialog on row selection to avoid conflicts
+    // with checkbox-based bulk actions. Use explicit Edit button instead.
+    self.selectedRow.subscribe(function(){ /* no-op */ });
 
     // ---------------- Load Data ----------------
     self.loadQuotes = function(customerId, status){
@@ -179,6 +164,24 @@ define([
       const rows = self.getCheckedRows();
       if (!rows.length) { self.showMessage('error','Select at least one quote'); return; }
       for (let row of rows) await self.confirmRow(row);
+    };
+
+    // Admin: open edit dialog for exactly one checked row
+    self.editSelectedQuote = function(){
+      if (!self.isAdmin()) { self.showMessage('error','Admin only'); return; }
+      const rows = self.getCheckedRows();
+      if (rows.length !== 1) { self.showMessage('error','Select exactly one quote to edit'); return; }
+      const quote = rows[0];
+      self.editQuote({
+        id: quote.id,
+        customerId: quote.customer && quote.customer.id,
+        productId: quote.product && quote.product.id,
+        sumAssured: quote.sumAssured,
+        termMonths: quote.termMonths,
+        status: quote.status
+      });
+      const dlg = document.getElementById('updateQuoteDialog');
+      if (dlg) dlg.open();
     };
 
     self.priceRow = async function(quote){
