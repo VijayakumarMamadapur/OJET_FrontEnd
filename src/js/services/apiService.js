@@ -1,42 +1,55 @@
-define(['./http', './config'], function(http, config) {
+define(['./http', './config'], function (http, config) {
   const base = config.base.core;
   const payBase = config.base.payment;
 
+  // --- helpers ---
   async function getJson(resp) {
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => '');
-      throw new Error('API error ' + resp.status + ' ' + text);
-    }
-    return resp.json();
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => '');
+    throw new Error('API error ' + resp.status + (text ? ' ' + text : ''));
+  }
+  // tolerate 204 or empty body
+  const text = await resp.text();
+  if (!text) return null;
+  try { return JSON.parse(text); } catch {
+    return text; // if server returns plain text
+  }
+}
+
+
+  // JSON request wrapper: auto-sets headers unless body is FormData/Blob
+  function jsonRequest(url, options = {}) {
+    const opts = { method: 'GET', ...options };
+    const isJsonBody = opts.body && !(opts.body instanceof FormData) && !(opts.body instanceof Blob);
+    opts.headers = {
+      'Accept': 'application/json',
+      ...(isJsonBody ? { 'Content-Type': 'application/json' } : {}),
+      ...(options.headers || {})
+    };
+    return http.request(url, opts);
   }
 
   const customers = {
     async getAll() {
-      const resp = await http.request(base + '/customers');
-      return getJson(resp);
+      return getJson(await jsonRequest(base + '/customers'));
     },
     async get(id) {
-      const resp = await http.request(base + '/customers/' + encodeURIComponent(id));
-      return getJson(resp);
+      return getJson(await jsonRequest(base + '/customers/' + encodeURIComponent(id)));
     },
     async create(payload) {
-      const resp = await http.request(base + '/customers', {
+      return getJson(await jsonRequest(base + '/customers', {
         method: 'POST',
         body: JSON.stringify(payload)
-      });
-      return getJson(resp);
+      }));
     },
     async update(id, payload) {
-      const resp = await http.request(base + '/customers/' + encodeURIComponent(id), {
+      return getJson(await jsonRequest(base + '/customers/' + encodeURIComponent(id), {
         method: 'PATCH',
         body: JSON.stringify(payload)
-      });
-      return getJson(resp);
+      }));
     },
     async remove(id) {
-      const resp = await http.request(base + '/customers/' + encodeURIComponent(id), {
-        method: 'DELETE'
-      });
+      const resp = await jsonRequest(base + '/customers/' + encodeURIComponent(id), { method: 'DELETE' });
       if (!resp.ok) throw new Error('Delete failed ' + resp.status);
       return true;
     }
@@ -45,31 +58,25 @@ define(['./http', './config'], function(http, config) {
   const products = {
     async getAll(activeOnly) {
       const url = activeOnly ? (base + '/products?active=true') : (base + '/products');
-      const resp = await http.request(url);
-      return getJson(resp);
+      return getJson(await jsonRequest(url));
     },
     async get(id) {
-      const resp = await http.request(base + '/products/' + encodeURIComponent(id));
-      return getJson(resp);
+      return getJson(await jsonRequest(base + '/products/' + encodeURIComponent(id)));
     },
     async create(payload) {
-      const resp = await http.request(base + '/products', {
+      return getJson(await jsonRequest(base + '/products', {
         method: 'POST',
         body: JSON.stringify(payload)
-      });
-      return getJson(resp);
+      }));
     },
     async update(id, payload) {
-      const resp = await http.request(base + '/products/' + encodeURIComponent(id), {
+      return getJson(await jsonRequest(base + '/products/' + encodeURIComponent(id), {
         method: 'PATCH',
         body: JSON.stringify(payload)
-      });
-      return getJson(resp);
+      }));
     },
     async remove(id) {
-      const resp = await http.request(base + '/products/' + encodeURIComponent(id), {
-        method: 'DELETE'
-      });
+      const resp = await jsonRequest(base + '/products/' + encodeURIComponent(id), { method: 'DELETE' });
       if (!resp.ok) throw new Error('Delete failed ' + resp.status);
       return true;
     }
@@ -82,37 +89,31 @@ define(['./http', './config'], function(http, config) {
       if (customerId) params.push('customer_id=' + encodeURIComponent(customerId));
       if (status) params.push('status=' + encodeURIComponent(status));
       if (params.length) url += '?' + params.join('&');
-      const resp = await http.request(url);
-      return getJson(resp);
+      return getJson(await jsonRequest(url));
     },
     async create(payload) {
-      const resp = await http.request(base + '/quotes', {
+      return getJson(await jsonRequest(base + '/quotes', {
         method: 'POST',
         body: JSON.stringify(payload)
-      });
-      return getJson(resp);
+      }));
     },
     async update(id, payload) {
-      const resp = await http.request(base + '/quotes/' + encodeURIComponent(id), {
+      return getJson(await jsonRequest(base + '/quotes/' + encodeURIComponent(id), {
         method: 'PATCH',
         body: JSON.stringify(payload)
-      });
-      return getJson(resp);
+      }));
     },
     async price(id) {
-      const resp = await http.request(base + '/quotes/' + encodeURIComponent(id) + '/price', { method: 'POST' });
-      return getJson(resp);
+      return getJson(await jsonRequest(base + '/quotes/' + encodeURIComponent(id) + '/price', { method: 'POST' }));
     },
     async confirm(id) {
-      const resp = await http.request(base + '/quotes/' + encodeURIComponent(id) + '/confirm', { method: 'POST' });
-      return getJson(resp);
+      return getJson(await jsonRequest(base + '/quotes/' + encodeURIComponent(id) + '/confirm', { method: 'POST' }));
     },
     async ackPayment(id) {
-      const resp = await http.request(base + '/quotes/' + encodeURIComponent(id) + '/ack-payment', { method: 'POST' });
-      return getJson(resp);
+      return getJson(await jsonRequest(base + '/quotes/' + encodeURIComponent(id) + '/ack-payment', { method: 'POST' }));
     },
     async remove(id) {
-      const resp = await http.request(base + '/quotes/' + encodeURIComponent(id), { method: 'DELETE' });
+      const resp = await jsonRequest(base + '/quotes/' + encodeURIComponent(id), { method: 'DELETE' });
       if (!resp.ok) throw new Error('Delete failed ' + resp.status);
       return true;
     }
@@ -125,68 +126,78 @@ define(['./http', './config'], function(http, config) {
       if (customerId) params.push('customer_id=' + encodeURIComponent(customerId));
       if (status) params.push('status=' + encodeURIComponent(status));
       if (params.length) url += '?' + params.join('&');
-      const resp = await http.request(url);
-      return getJson(resp);
+      return getJson(await jsonRequest(url));
     },
     async get(id) {
-      const resp = await http.request(base + '/policies/' + encodeURIComponent(id));
-      return getJson(resp);
+      return getJson(await jsonRequest(base + '/policies/' + encodeURIComponent(id)));
     }
   };
 
-  const claims = {
-    async getAll(policyId, status) {
-      let url = base + '/claims';
-      const params = [];
-      if (policyId) params.push('policy_id=' + encodeURIComponent(policyId));
-      if (status) params.push('status=' + encodeURIComponent(status));
-      if (params.length) url += '?' + params.join('&');
-      const resp = await http.request(url);
-      return getJson(resp);
-    },
-    async create(payload) {
-      const resp = await http.request(base + '/claims', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-      return getJson(resp);
-    },
-    async update(id, payload) {
-      const resp = await http.request(base + '/claims/' + encodeURIComponent(id), {
-        method: 'PATCH',
-        body: JSON.stringify(payload)
-      });
-      return getJson(resp);
-    },
-    async assess(id, payload) {
-      const resp = await http.request(base + '/claims/' + encodeURIComponent(id) + '/assess', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-      return getJson(resp);
-    },
-    async close(id) {
-      const resp = await http.request(base + '/claims/' + encodeURIComponent(id) + '/close', { method: 'POST' });
-      return getJson(resp);
-    }
-  };
+  // apiService.js
+// apiService.js (claims section only)
+const claims = {
+  async getAll(policyId, status) {
+    let url = base + '/claims';
+    const params = [];
+    if (policyId) params.push('policy_id=' + encodeURIComponent(policyId));
+    if (status)   params.push('status=' + encodeURIComponent(status));
+    if (params.length) url += '?' + params.join('&');
+    const resp = await http.request(url);
+    return getJson(resp);
+  },
+
+  async create(payload) {
+    const resp = await http.request(base + '/claims', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return getJson(resp);
+  },
+
+  async update(id, payload) {
+    const resp = await http.request(base + '/claims/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return getJson(resp);
+  },
+
+  async assess(id, payload) {
+    const resp = await http.request(base + '/claims/' + encodeURIComponent(id) + '/assess', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return getJson(resp);
+  },
+
+  async close(id) {
+    // Many backends expect a JSON body (even if empty) + header
+    const resp = await http.request(base + '/claims/' + encodeURIComponent(id) + '/close', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({}) // safe no-op payload
+    });
+    return getJson(resp);
+  }
+};
+
 
   const payments = {
     async list(targetType, targetId) {
-      let url = payBase + '/payments?targetType=' + encodeURIComponent(targetType) + '&targetId=' + encodeURIComponent(targetId);
-      const resp = await http.request(url);
-      return getJson(resp);
+      const url = payBase + '/payments?targetType=' + encodeURIComponent(targetType) + '&targetId=' + encodeURIComponent(targetId);
+      return getJson(await jsonRequest(url));
     },
     async create(payload) {
-      const resp = await http.request(payBase + '/payments', {
+      return getJson(await jsonRequest(payBase + '/payments', {
         method: 'POST',
         body: JSON.stringify(payload)
-      });
-      return getJson(resp);
+      }));
     },
     async get(id) {
-      const resp = await http.request(payBase + '/payments/' + encodeURIComponent(id));
-      return getJson(resp);
+      return getJson(await jsonRequest(payBase + '/payments/' + encodeURIComponent(id)));
     }
   };
 

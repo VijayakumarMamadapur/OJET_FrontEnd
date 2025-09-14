@@ -1,3 +1,156 @@
-/* Claims page simple spacing */
-.claims-header { justify-content: space-between; margin-bottom: 12px; }
+/* Base Layout */
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: #f4f6f9;
+  margin: 0;
+  padding: 20px;
+  color: #2c3e50;
+}
 
+.claims-page {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Header Section */
+.claims-header {
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin: 0;
+  color: #34495e;
+}
+
+.page-title span {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+/* Toolbar Buttons */
+.oj-flex.oj-sm-margin-2x {
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+oj-button {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+oj-button[chroming="outlined"] {
+  border: 1px solid #3498db;
+  color: #3498db;
+  background-color: transparent;
+}
+
+oj-button[chroming="outlined"]:hover {
+  background-color: #ecf5fd;
+}
+
+oj-button[chroming="callToAction"] {
+  background-color: #3498db;
+  color: white;
+  border-radius: 6px;
+}
+
+oj-button[chroming="callToAction"]:hover {
+  background-color: #2980b9;
+}
+
+/* Messages */
+oj-messages {
+  margin-bottom: 20px;
+}
+
+/* Form Layout */
+oj-form-layout {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+oj-input-text,
+oj-input-date,
+oj-input-number,
+oj-select-single {
+  margin-bottom: 16px;
+}
+
+/* Claims Table */
+oj-table {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+oj-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+oj-table th,
+oj-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+oj-table th {
+  background-color: #f0f3f5;
+  font-weight: 600;
+  color: #34495e;
+}
+
+oj-table tr:hover {
+  background-color: #f9fbfc;
+}
+
+/* Dialog Styling */
+oj-dialog {
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+oj-dialog .oj-form-layout {
+  padding: 20px;
+}
+
+oj-dialog .oj-button {
+  margin-top: 10px;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  .claims-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .oj-flex.oj-sm-margin-2x {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  oj-button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  oj-form-layout {
+    padding: 10px;
+  }
+
+  oj-table {
+    padding: 0;
+  }
+}

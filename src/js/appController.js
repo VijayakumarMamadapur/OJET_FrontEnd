@@ -44,7 +44,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         { path: 'quotes', detail: { label: 'Quotes', iconClass: 'oj-ux-ico-list' }, roles: ['ADMIN','USER'] },
         { path: 'policies', detail: { label: 'Policies', iconClass: 'oj-ux-ico-shield' }, roles: ['ADMIN','USER'] },
         { path: 'claims', detail: { label: 'Claims', iconClass: 'oj-ux-ico-clipboard' }, roles: ['ADMIN','USER'] },
-        { path: 'payments', detail: { label: 'Payments', iconClass: 'oj-ux-ico-cash' }, roles: ['ADMIN','USER'] },
+        // { path: 'payments', detail: { label: 'Payments', iconClass: 'oj-ux-ico-cash' }, roles: ['ADMIN','USER'] },
         { path: 'about', detail: { label: 'About', iconClass: 'oj-ux-ico-information-s' } }
       ];
 

@@ -2,48 +2,86 @@
 
 <div class="claims-page oj-flex oj-sm-flex-direction-column">
   <div class="claims-header oj-flex oj-sm-flex-items-pad oj-sm-align-items-center">
-    <h2 class="page-title">Claims</h2>
+    <h2 class="page-title">
+      Claims
+      <span class="oj-typography-body-sm oj-ux-override-padding-start-sm">
+        (<oj-bind-text value="[[claimsCount()]]"></oj-bind-text> rows)
+      </span>
+    </h2>
+
+    <!-- Non-admin: show File Claim -->
     <oj-bind-if test="[[!isAdmin()]]">
       <oj-button on-oj-action="[[openNewClaimDialog]]">File Claim</oj-button>
     </oj-bind-if>
   </div>
 
+  <!-- Selection toolbar -->
+  <div class="oj-flex oj-sm-align-items-center oj-sm-margin-2x">
+    <!-- User action -->
+    <!-- User action -->
+<oj-bind-if test="[[!isAdmin()]]">
+  <oj-button
+    disabled="[[!canUserUpdate()]]"
+    on-oj-action="[[openUpdateFromSelection]]">
+    Update Selected
+  </oj-button>
+</oj-bind-if>
+
+<!-- Admin actions -->
+<oj-bind-if test="[[isAdmin()]]">
+  <oj-button
+    disabled="[[!canAssess()]]"
+    class="oj-sm-margin-end"
+    on-oj-action="[[openAssessFromSelection]]">
+    Assess Selected
+  </oj-button>
+
+  <oj-button
+    chroming="outlined"
+    disabled="[[!canClose()]]"
+    on-oj-action="[[closeFromSelection]]">
+    Close Selected
+  </oj-button>
+</oj-bind-if>
+
+
+  </div>
+
   <oj-messages messages="[[messages]]"></oj-messages>
 
+  <!-- Admin filters -->
   <oj-bind-if test="[[isAdmin()]]">
-    <oj-form-layout>
+    <oj-form-layout max-columns="3">
       <oj-input-text label-hint="Policy ID" value="{{filterPolicyId}}"></oj-input-text>
-      <oj-select-single label-hint="Status" data="[[statusDP]]" value="{{filterStatus}}"></oj-select-single>
-      <oj-button on-oj-action="[[applyFilter]]">Apply Filter</oj-button>
+
+      <oj-select-single label-hint="Status"
+                        data="[[statusDP]]"
+                        item-text="label"
+                        value="{{filterStatus}}"
+                        placeholder="Any">
+      </oj-select-single>
+
+      <oj-button on-oj-action="[[applyFilter]]" class="oj-sm-margin-top-2x">Apply Filter</oj-button>
     </oj-form-layout>
   </oj-bind-if>
 
-  <oj-table data="[[claimsDP]]" selection-mode='{"row":"single"}'
-            columns='[
-              {"headerText":"Claim #","field":"claimNumber"},
-              {"headerText":"Policy ID","field":"policyId"},
-              {"headerText":"Loss Date","field":"lossDate"},
-              {"headerText":"Description","field":"description"},
-              {"headerText":"Status","field":"status"},
-              {"headerText":"Approved Amount","field":"approvedAmount"},
-              {"headerText":"Reason","field":"decisionReason"},
-              {"headerText":"Actions","template":"actionTemplate"}
-            ]'>
-    <template slot="actionTemplate" data-oj-as="row">
-      <oj-bind-if test="[[!$parent.isAdmin()]]">
-        <oj-button chroming="outlined" size="sm" on-oj-action="[[function(){ $parent.openUpdateDialog(row.data); }]]">Update</oj-button>
-      </oj-bind-if>
-      <oj-bind-if test="[[$parent.isAdmin()]]">
-        <oj-button chroming="outlined" size="sm" on-oj-action="[[function(){ $parent.openAssessDialog(row.data); }]]">Assess</oj-button>
-        <oj-button chroming="outlined" size="sm" on-oj-action="[[function(){ $parent.closeClaim(row.data); }]]">Close</oj-button>
-      </oj-bind-if>
-    </template>
+  <!-- Claims table with built-in row selection -->
+  <oj-table
+    data="[[claimsDP]]"
+    columns="[[columns]]"
+    selection-mode='{"row":"multiple"}'
+    selected="{{selected}}">
   </oj-table>
 
+  <!-- File Claim -->
   <oj-dialog id="newClaimDialog" dialog-title="File New Claim" cancel-behavior="icon">
     <div slot="body">
-      <oj-form-layout>
-        <oj-input-text label-hint="Policy ID" value="{{newClaim.policyId}}"></oj-input-text>
+      <oj-form-layout max-columns="2">
+        <oj-select-single label-hint="Policy"
+                          data="[[policiesDP]]"
+                          item-text="policyNumber"
+                          value="{{newClaim.policyId}}">
+        </oj-select-single>
         <oj-input-text label-hint="Description" value="{{newClaim.description}}"></oj-input-text>
         <oj-input-date label-hint="Loss Date" value="{{newClaim.lossDate}}"></oj-input-date>
       </oj-form-layout>
@@ -54,9 +92,10 @@
     </div>
   </oj-dialog>
 
+  <!-- Update Claim -->
   <oj-dialog id="updateClaimDialog" dialog-title="Update Claim" cancel-behavior="icon">
     <div slot="body">
-      <oj-form-layout>
+      <oj-form-layout max-columns="2">
         <oj-input-text label-hint="Description" value="{{selectedClaim.description}}"></oj-input-text>
         <oj-input-date label-hint="Loss Date" value="{{selectedClaim.lossDate}}"></oj-input-date>
       </oj-form-layout>
@@ -67,16 +106,21 @@
     </div>
   </oj-dialog>
 
+  <!-- Assess (Admin) -->
   <oj-dialog id="assessClaimDialog" dialog-title="Assess Claim" cancel-behavior="icon">
     <div slot="body">
-      <oj-form-layout>
-        <oj-input-text label-hint="Decision" value="{{assessData.decision}}"></oj-input-text>
+      <oj-form-layout max-columns="2">
+        <oj-select-single label-hint="Decision"
+                          data="[[assessStatusDP]]"
+                          item-text="label"
+                          value="{{assessData.decision}}">
+        </oj-select-single>
         <oj-input-number label-hint="Approved Amount" value="{{assessData.approvedAmount}}"></oj-input-number>
         <oj-input-text label-hint="Reason" value="{{assessData.reason}}"></oj-input-text>
       </oj-form-layout>
     </div>
     <div slot="footer">
-      <oj-button on-oj-action="[[assessClaim]]">Submit</oj-button>
+      <oj-button disabled="[[isAssessing()]]" on-oj-action="[[assessClaim]]">Submit</oj-button>
       <oj-button on-oj-action="[[closeAssessDialog]]">Cancel</oj-button>
     </div>
   </oj-dialog>
